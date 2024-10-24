@@ -1,10 +1,8 @@
 package handler
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"log"
 	"net/http"
 	"strings"
 	"vercel-go/middleware"
@@ -50,14 +48,10 @@ func registerRouter(r *gin.RouterGroup) {
 		ctx.String(http.StatusOK, path)
 	})
 	r.GET("/api/list", func(ctx *gin.Context) {
-		marshal, err := json.Marshal(list)
-		if err != nil {
-			log.Panicln(err)
-		}
 		ctx.JSON(http.StatusOK, Response{
 			Code: 200,
 			Msg:  "success",
-			Data: string(marshal),
+			Data: list,
 		})
 	})
 	r.GET("/", func(ctx *gin.Context) {
