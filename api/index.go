@@ -1,19 +1,31 @@
 package handler
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 	"strings"
+	"vercel-go/middleware"
 )
 
 var (
-	app *gin.Engine
+	app  *gin.Engine
+	list []string
 )
+
+type Response struct {
+	Code int         `json:"code"` //提示代码
+	Msg  string      `json:"msg"`  //提示信息
+	Data interface{} `json:"data"` //数据
+}
 
 // init gin app
 func init() {
+
 	app = gin.New()
+	app.Use(middleware.Recover)
 
 	// Handling routing errors
 	app.NoRoute(func(c *gin.Context) {
@@ -32,8 +44,24 @@ func init() {
 }
 
 func registerRouter(r *gin.RouterGroup) {
-	r.GET("/api/hello", func(ctx *gin.Context) {
-		ctx.String(http.StatusOK, "hello")
+	r.GET("/api/add/:path", func(ctx *gin.Context) {
+		path := ctx.Param("path")
+		list = append(list)
+		ctx.String(http.StatusOK, path)
+	})
+	r.GET("/api/list", func(ctx *gin.Context) {
+		marshal, err := json.Marshal(list)
+		if err != nil {
+			log.Panicln(err)
+		}
+		ctx.JSON(http.StatusOK, Response{
+			Code: 200,
+			Msg:  "success",
+			Data: string(marshal),
+		})
+	})
+	r.GET("/", func(ctx *gin.Context) {
+		ctx.String(http.StatusOK, "hello vercel go")
 	})
 }
 
